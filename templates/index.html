@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Socratic AI</title>
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/css/bootstrap.min.css" rel="stylesheet">
+        <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/markdown-it/dist/markdown-it.min.js"></script>
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.2.0/styles/monokai-sublime.min.css">
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.2.0/highlight.min.js"></script>
+        <style>
+            @import url('https://fonts.googleapis.com/css2?family=Quicksand:wght@500&display=swap');
+
+            body {
+                font-family: Futura, sans-serif;
+                font-size: 0.8rem;
+                background-color: #212529;
+                color: #f8f9fa;
+            }
+            #chat-container {
+                width: 80%;
+                max-width: 900px;
+                margin: 2rem auto;
+            }
+            #chat-history {
+                height: 600px;
+                border: 1px solid #ccc;
+                overflow-y: scroll;
+                padding: 10px;
+                background-color: #343a40;
+            }
+            #user-input {
+                width: 100%;
+                box-sizing: border-box;
+            }
+            p {
+                margin: 3px 0;
+            }
+            h1 {
+                font-family: 'Quicksand', sans-serif;
+                font-size: 2.5rem;
+                color: #ffffff;
+            }
+            .typing-animation {
+                display: inline-block;
+                position: relative;
+                bottom: -0.1em;
+                margin-left: 0.1em;
+                font-size: 1rem;
+                animation: typing 0.02s steps(4) 0s infinite;
+            }
+            @keyframes typing {
+                0% {
+                    width: 0.1em;
+                }
+                50% {
+                    width: 0.6em;
+                }
+                100% {
+                    width: 0.1em;
+                }
+            }
+            .message-sender {
+                font-weight: bold;
+            }
+            .message-content {
+                display: inline;
+            }
+            /* Additional styling and animation */
+            body::after {
+                content: "";
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background-image: radial-gradient(circle, rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0.05), rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0.3));
+                background-size: 50px 50px;
+                z-index: -1;
+                animation: intelligent-bg 15s linear infinite;
+            }
+            @keyframes intelligent-bg {
+                0% {
+                    background-position: 0 0}
+                100% {
+                    background-position: 400px 0;
+                }
+            }
+            /* User message colors */
+            .tony-message {
+                margin-bottom: 8px;
+                color: #2ecc71;
+            }
+            .socrates-message {
+                margin-bottom: 8px;
+                color: #e74c3c;
+            }
+            .theaetetus-message {
+                margin-bottom: 8px;
+                color: #3498db;
+            }
+            .plato-message {
+                margin-bottom: 8px;
+                color: #f1c40f;
+            }
+            .system-message {
+                text-align: center;
+                margin-bottom: 6px;
+                color: #94928e;
+            }
+            /* Copy button styling */
+            .copy-code-btn {
+                position: absolute;
+                top: 0;
+                right: 0;
+                background-color: #f8f9fa;
+                color: #212529;
+                border: none;
+                border-radius: 4px;
+                padding: 4px 8px;
+                font-size: 10px;
+                cursor: pointer;
+                opacity: 0;
+                transition: opacity 0.2s ease-in-out;
+                z-index: 10;
+            }
+
+            .hljs {
+                position: relative;
+            }
+
+            .hljs:hover .copy-code-btn {
+                opacity: 1;
+            }
+
+        </style>
+    </head>
+    <body>
+        <div id="chat-container">
+            <h1 class="text-center mb-4">Socratic AI</h1>
+            <div id="chat-history" class="rounded"></div>
+            <div class="input-group mt-3">
+                <textarea id="user-input" class="form-control" placeholder="Type your message..." rows="3"></textarea>
+                <div class="send-btn-container">
+                    <button id="send-btn" class="btn btn-success btn-sm">Send</button>
+                </div>
+            </div>
+        </div>
+        <script>
+            let requestInProgress = false
+            const md = window.markdownit({
+                highlight: function (str, lang) {
+                    if (lang && hljs.getLanguage(lang)) {
+                        try {
+                            const highlighted = hljs.highlightBlock(str, { language: lang });
+                            return `<pre class="hljs language-${lang}"><code>${highlighted.value}</code><button class="copy-code-btn" data-clipboard-text="${highlighted.value}">Copy</button></pre>`;
+                        } catch (__) {}
+                    }
+                    return `<pre class="hljs"><code>${md.utils.escapeHtml(str)}</code></pre>`;
+                }
+            });
+
+
+            $(document).ready(function() {
+                setInterval(obtainActiveMessage, 2000);
+                hljs.highlightAll();
+                $(document).on('click', '.copy-code-btn', function() {
+                    var code = $(this).siblings('code').text();
+                    var copyTextarea = document.createElement('textarea');
+                    copyTextarea.textContent = code;
+                    document.body.appendChild(copyTextarea);
+                    copyTextarea.select();
+                    document.execCommand('copy');
+                    document.body.removeChild(copyTextarea);
+                    $(this).text('Copied!');
+                });
+            });
+
+            $(document).ready(function() {
+                $('#send-btn').on('click', function() {
+                    let user_input = $('#user-input').val();
+                    if (user_input.trim() !== '') {
+                        $('#user-input').val('');
+                        addChatMessage('tony', user_input);
+                        $.post('/chat', { user_input: user_input }, function(data) {
+                            var msg_count = data.length;
+                            if (msg_count > 0) {
+                                for (var i = 0; i < msg_count; i++) {
+                                    if (data[i].response) {
+                                        addChatMessage(data[i].role, data[i].response);
+                                    }
+                                }
+                            }
+                        }, 'json');
+                    }
+                });
+
+                // Support sending messages with Shift+Enter
+                $('#user-input').on('keypress', function(e) {
+                    if (e.which === 13 && e.shiftKey) {
+                        e.preventDefault();
+                        $('#send-btn').click();
+                    }
+                });
+            });
+
+
+            function addChatMessage(sender, message) {
+                let formattedMessage = md.render(message).trim();
+                let chat_history = $('#chat-history');
+                let cssClass = sender + '-message';
+                chat_history.append('<div class="' + cssClass + '"><strong>' + sender.charAt(0).toUpperCase() + sender.slice(1) + ':</strong><br><div class="markdown">' + formattedMessage + '</div></div>');
+                chat_history.scrollTop(chat_history[0].scrollHeight);
+                chat_history.find('pre code').each(function(i, block) {
+                    hljs.highlightBlock(block);
+                    if (!$(block).siblings('.copy-code-btn').length) {
+                        $(block).parent().prepend('<button class="copy-code-btn" data-clipboard-text="' + $(block).text() + '">Copy</button>');
+                    }
+                });
+            } 
+
+            function obtainActiveMessage() {
+                if (!requestInProgress) {
+                    requestInProgress = true;
+                    $.getJSON('/active-message', function (data) {
+                        var msg_count = data.length;
+                        if (msg_count > 0) {
+                            for (var i = 0; i < msg_count; i++) {
+                                if (data[i].response) {
+                                    addChatMessage(data[i].role, data[i].response);
+                                }
+                            }
+                            
+                        }
+                    });
+                    requestInProgress = false;
+                }
+            }
+
+
+        </script>
+    </body>
+</html>
