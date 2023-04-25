@@ -1,0 +1,4 @@
+Flask==2.2.3
+Flask-Session==0.4.0
+openai==0.27.4
+wolframalpha==5.0.0

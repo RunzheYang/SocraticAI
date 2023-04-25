@@ -16,7 +16,13 @@ Socratic AI employs this powerful technique by engaging multiple AI agents in co
 
 To get started with SocraticAI, follow these simple steps:
 
-1. Ensure that you have the necessary API keys for OpenAI and Wolfram Alpha by setting the following environment variables:
+1. Install the required packages by running the following command in your terminal:
+
+```
+pip install -r requirements.txt
+```
+
+2. Ensure that you have the necessary API keys for OpenAI and Wolfram Alpha by setting the following environment variables:
 
 ```
 export OPENAI_ORG="your-openai-org"
@@ -24,12 +30,12 @@ export OPENAI_API_KEY="your-openai-key"
 export WOLFRAM_APP_ID="your-wolfram-alpha-key"
 ```
 
-2. Run the web application by executing the following command in your terminal:
+3. Run the web application by executing the following command in your terminal:
 
 ```
 python app.py
 ```
 
-3. Access the SocraticAI web app by opening your web browser and navigating to the following address: `http://127.0.0.1:5000/`
+4. Access the SocraticAI web app by opening your web browser and navigating to the following address: `http://127.0.0.1:5000/`
 
 Now you're all set to explore the power of Socratic dialogue and AI-driven problem-solving with SocraticAI!
