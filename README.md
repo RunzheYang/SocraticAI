@@ -8,7 +8,8 @@ Discover Socratic AI, a groundbreaking application that transforms problem-solvi
 
 Check out this demo video to see SocraticAI in action:
 
-<iframe src="https://player.vimeo.com/video/821089266?h=0604e597da" width="640" height="564" frameborder="0" allow="autoplay; fullscreen" allowfullscreen></iframe>
+[Watch the SocraticAI Demo Video on Vimeo](https://vimeo.com/821089266)
+
 
 ## Understanding the Socratic Method
 
