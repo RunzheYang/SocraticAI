@@ -84,7 +84,7 @@ def active_message():
                         q, a = ref["question"], ref["answer"]
                         msg_list.append(
                             {'role': 'system', 
-                             'response': f"WalframAlpha Received Question: {q}\n\n  WalframAlpha Answer: {a}"})
+                             'response': f"WolframAlpha Received Question: {q}\n\n  WolframAlpha Answer: {a}"})
                         session_state.socrates.add_reference(q, a)
                         session_state.theaetetus.add_reference(q, a)
                         session_state.plato.add_feedback(q, a)
@@ -220,7 +220,7 @@ def active_message():
                                 q, a = ref["question"], ref["answer"]
                                 msg_list.append(
                                     {'role': 'system', 
-                                    'response': f"WalframAlpha Received Question: {q}\n\n  WalframAlpha Answer: {a}"})
+                                    'response': f"WolframAlpha Received Question: {q}\n\n  WolframAlpha Answer: {a}"})
                                 session_state.socrates.add_reference(q, a)
                                 session_state.theaetetus.add_reference(q, a)
                                 session_state.plato.add_feedback(q, a)
