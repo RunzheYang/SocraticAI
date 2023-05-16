@@ -12,7 +12,7 @@ openai.api_key = os.environ.get("OPENAI_API_KEY")
 math_engine = wolframalpha.Client(os.environ.get("WOLFRAM_APP_ID"))
 
 counter = 0
-
+a = 0
 
 def request_chatgpt(model, messages, temperature):
     try:
