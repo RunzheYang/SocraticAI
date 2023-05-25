@@ -1,3 +1,4 @@
+from dotenv import load_dotenv
 from flask import Flask, render_template, request, jsonify, session
 from flask_session import Session
 import uuid
@@ -6,6 +7,8 @@ import subprocess
 from subprocess import TimeoutExpired
 
 from AliceBobCindy import *
+
+load_dotenv()
 
 app = Flask(__name__)
 app.config['SESSION_TYPE'] = 'filesystem'

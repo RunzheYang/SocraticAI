@@ -46,3 +46,30 @@ python app.py
 4. Access the SocraticAI web app by opening your web browser and navigating to the following address: `http://127.0.0.1:5000/`. We recommend using Google Chrome for the best user experience.
 
 Now you're all set to explore the power of Socratic dialogue and AI-driven problem-solving with SocraticAI!
+
+## Docker build & run
+
+edit .env file 
+```
+GPT_API_KEY=
+OPENAI_ORG=
+WOLFRAM_APP_ID=
+```
+
+```
+cd SocraticAI 
+docker build -f Dockerfile --tag socratic-docker .
+```
+
+run
+```
+docker compose up -d
+```
+or
+```
+docker-compose up -d
+```
+endpoint
+```
+http://127.0.0.1
+```

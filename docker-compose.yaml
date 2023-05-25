@@ -1,0 +1,20 @@
+version: '3.3'
+
+# starts 1 docker container running minio server instances.
+services:
+
+  socratic-docker:
+    image: socratic-docker
+    container_name: socratic-docker
+    ports:
+      - 80:5000
+    env_file:
+      - .env
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://socratic-docker" ]
+      interval: 30s
+      timeout: 20s
+      retries: 3
+
+volumes:
+  data:
