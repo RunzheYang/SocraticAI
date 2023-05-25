@@ -7,7 +7,7 @@ services:
     image: socratic-docker
     container_name: socratic-docker
     ports:
-      - 5000:5000
+      - 81:5000
     env_file:
       - .env
     healthcheck:

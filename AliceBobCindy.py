@@ -7,14 +7,15 @@ import openai
 import wolframalpha
 from openai.error import InvalidRequestError
 
-openai.organization = os.environ.get("OPENAI_ORG")
-openai.api_key = os.environ.get("OPENAI_API_KEY")
-math_engine = wolframalpha.Client(os.environ.get("WOLFRAM_APP_ID"))
+openai.api_key = os.getenv("GPT_API_KEY")
+openai.organization = os.getenv("OPENAI_ORG")
+math_engine = wolframalpha.Client(os.getenv("WOLFRAM_APP_ID"))
+model = 'gpt-3.5-turbo'
 
 counter = 0
-a = 0
 
-def request_chatgpt(model, messages, temperature):
+
+def request_chatgpt(messages, temperature):
     try:
         if temperature:
             res = openai.ChatCompletion.create(
@@ -33,7 +34,7 @@ def request_chatgpt(model, messages, temperature):
     except openai.error.RateLimitError as e:
         time.sleep(20)
         print('timeout')
-        msg = request_chatgpt(model=model, messages=messages, temperature=temperature)
+        msg = request_chatgpt(messages=messages, temperature=temperature)
     except openai.error.InvalidRequestError as e:
         return {'id': '-1', 'text': e}
     except openai.error.APIError as e:
@@ -43,9 +44,8 @@ def request_chatgpt(model, messages, temperature):
 
 
 class SocraticGPT:
-    def __init__(self, role, n_round=10, model="gpt-3.5-turbo"):
+    def __init__(self, role, n_round=10):
         self.role = role
-        self.model = model
         self.n_round = n_round
 
         if self.role == "Socrates":
@@ -87,7 +87,7 @@ class SocraticGPT:
 
     def get_response(self, temperature=None):
 
-        msg = request_chatgpt(model='gpt-3.5-turbo', messages=self.history, temperature=temperature)
+        msg = request_chatgpt(messages=self.history, temperature=temperature)
 
         self.history.append({
             "role": "assistant",
@@ -102,7 +102,7 @@ class SocraticGPT:
             "content": "The above is the conversation between Socrates and Theaetetus. You job is to challenge their anwers. They were likely to have made multiple mistakes. Please correct them. \nRemember to start your answer with \"NO\" if you think so far their discussion is alright, otherwise start with \"Here are my suggestions:\""
         }
         p = self.history + [pf_template]
-        msg = request_chatgpt(model='gpt-3.5-turbo', messages=p, temperature=temperature)
+        msg = request_chatgpt( messages=p, temperature=temperature)
         print("msg" + str(msg))
 
         if msg[:2] in ["NO", "No", "no"]:
