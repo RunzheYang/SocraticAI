@@ -69,3 +69,7 @@ or
 ```
 docker-compose up -d
 ```
+endpoint
+```
+http://127.0.0.1
+```
